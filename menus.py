@@ -2,6 +2,7 @@ from config import (
     TIJDLIMIET_GEWOON_EXAMEN_MIN,
     TIJDLIMIET_VAK_CASES_MIN,
     TIJDLIMIET_VAK_MC_MIN,
+    BESTANDSNAAM,
 )
 from database import RIJBEWIJS_HOOFDSTUKKEN, VAK_HOOFDSTUKKEN
 from exam import (
@@ -12,6 +13,7 @@ from exam import (
 from practice import oefen_hoofdstuk
 from storage import sla_voortgang_op, laad_voortgang
 import time
+import os
 
 
 def menu_vakbekwaamheid_oefen(data):
@@ -172,13 +174,23 @@ def reset_volledig(data):
         print("Annuleren.")
         return
 
-    # Herstel naar lege structuur zoals laad_voortgang() zou retourneren
+    # Verwijder het voortgangsbestand als het bestaat (gebruikerswens)
+    if os.path.exists(BESTANDSNAAM):
+        try:
+            os.remove(BESTANDSNAAM)
+            print(f"✅ Bestand '{BESTANDSNAAM}' is verwijderd.")
+        except OSError:
+            print(f"⚠️ Kon '{BESTANDSNAAM}' niet verwijderen. Annuleren.")
+            return
+    else:
+        print("Geen voortgangsbestand gevonden — niets te verwijderen.")
+
+    # Werk ook de in-memory data bij naar lege structuur
     default = laad_voortgang()
     data.clear()
     data.update(default)
-    sla_voortgang_op(data)
-    print("✅ Alle voortgang is verwijderd."
-          " Je kunt nu opnieuw beginnen.")
+
+    print("✅ Alle voortgang is verwijderd. Je kunt nu opnieuw beginnen.")
 
 
 def menu_reset_options(data):
