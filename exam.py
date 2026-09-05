@@ -5,6 +5,9 @@ from config import (
     TIJDLIMIET_GEWOON_EXAMEN_MIN,
     TIJDLIMIET_VAK_CASES_MIN,
     TIJDLIMIET_VAK_MC_MIN,
+    SLAGINGSCRITERIUM_RIJBEWIJS,
+    SLAGINGSCRITERIUM_VAK_MC,
+    SLAGINGSCRITERIUM_VAK_CASES,
 )
 from storage import sla_voortgang_op
 from utils import valideer_invoer
@@ -58,6 +61,23 @@ def voer_examen_onderdeel_uit(
     return True
 
 
+def check_slagingsstatus(score, totaal, exam_type):
+    """
+    Controleer of de score aan het slagingscriterium voldoet.
+    Retourneert (geslaagd: bool, minimale_score: int)
+    """
+    if exam_type == "rijbewijs":
+        minimaal = SLAGINGSCRITERIUM_RIJBEWIJS
+    elif exam_type == "vak_mc":
+        minimaal = SLAGINGSCRITERIUM_VAK_MC
+    elif exam_type == "vak_cases":
+        minimaal = SLAGINGSCRITERIUM_VAK_CASES
+    else:
+        minimaal = 0
+
+    return score >= minimaal, minimaal
+
+
 def start_rijbewijs_examen(data, reeks):
     """Gewoon Rijbewijs Examen met timer."""
     examens = data["rijbewijs"].setdefault("examens", {})
@@ -79,6 +99,7 @@ def start_rijbewijs_examen(data, reeks):
     print("\n==========================================")
     print(f"  START GEWOON RIJBEWIJS EXAMEN {reeks}")
     print(f"  Tijdslimiet: {TIJDLIMIET_GEWOON_EXAMEN_MIN} minuten (50 vragen)")
+    print(f"  Slagingscriterium: minstens {SLAGINGSCRITERIUM_RIJBEWIJS}/50")
     print("==========================================")
 
     start_tijd = ex_data.get("start_tijd", time.time())
@@ -93,7 +114,14 @@ def start_rijbewijs_examen(data, reeks):
     juist = sum(1 for q, a in ex_data["antwoorden"].items() if sleutel[int(q)] == a)
     ex_data["score"] = juist
     sla_voortgang_op(data)
-    print(f"\n🎉 EXAMEN VOLTOOID! Score: {juist} / 50")
+    
+    geslaagd, minimaal = check_slagingsstatus(juist, 50, "rijbewijs")
+    if geslaagd:
+        print(f"\n🎉 EXAMEN VOLTOOID! Score: {juist} / 50")
+        print("✅ JE BENT GESLAAGD!")
+    else:
+        print(f"\n🎉 EXAMEN VOLTOOID! Score: {juist} / 50")
+        print(f"❌ JE BENT NIET GESLAAGD. Je nodig minstens {minimaal} punten.")
 
 
 def start_vakbekwaamheid_mc_examen(data, reeks):
@@ -117,6 +145,7 @@ def start_vakbekwaamheid_mc_examen(data, reeks):
     print("\n==========================================")
     print(f"  VAKBEKWAAMHEID MC EXAMEN REEKS {reeks}")
     print(f"  Tijdslimiet: {TIJDLIMIET_VAK_MC_MIN} minuten (50 vragen)")
+    print(f"  Slagingscriterium: minstens {SLAGINGSCRITERIUM_VAK_MC}/50")
     print("==========================================")
 
     start_tijd = r_data.get("start_tijd", time.time())
@@ -131,7 +160,14 @@ def start_vakbekwaamheid_mc_examen(data, reeks):
     juist = sum(1 for q, a in r_data["antwoorden"].items() if ex_def[int(q)] == a)
     r_data["score"] = juist
     sla_voortgang_op(data)
-    print(f"\n🎉 MC EXAMEN VOLTOOID! Score: {juist} / 50")
+    
+    geslaagd, minimaal = check_slagingsstatus(juist, 50, "vak_mc")
+    if geslaagd:
+        print(f"\n🎉 MC EXAMEN VOLTOOID! Score: {juist} / 50")
+        print("✅ JE BENT GESLAAGD!")
+    else:
+        print(f"\n🎉 MC EXAMEN VOLTOOID! Score: {juist} / 50")
+        print(f"❌ JE BENT NIET GESLAAGD. Je nodig minstens {minimaal} punten.")
 
 
 def start_vakbekwaamheid_cases_examen(data, reeks):
@@ -155,6 +191,7 @@ def start_vakbekwaamheid_cases_examen(data, reeks):
     print("\n==========================================")
     print(f"  VAKBEKWAAMHEID CASUS EXAMEN REEKS {reeks}")
     print(f"  Tijdslimiet: {TIJDLIMIET_VAK_CASES_MIN} minuten (8 Cases / 40 vragen)")
+    print(f"  Slagingscriterium: minstens {SLAGINGSCRITERIUM_VAK_CASES}/40")
     print("==========================================")
 
     start_tijd = r_data.get("start_tijd", time.time())
@@ -182,4 +219,11 @@ def start_vakbekwaamheid_cases_examen(data, reeks):
 
     r_data["score"] = juist
     sla_voortgang_op(data)
-    print(f"\n🎉 CASUS EXAMEN VOLTOOID! Score: {juist} / {totaal_vragen}")
+    
+    geslaagd, minimaal = check_slagingsstatus(juist, totaal_vragen, "vak_cases")
+    if geslaagd:
+        print(f"\n🎉 CASUS EXAMEN VOLTOOID! Score: {juist} / {totaal_vragen}")
+        print("✅ JE BENT GESLAAGD!")
+    else:
+        print(f"\n🎉 CASUS EXAMEN VOLTOOID! Score: {juist} / {totaal_vragen}")
+        print(f"❌ JE BENT NIET GESLAAGD. Je nodig minstens {minimaal} punten.")
