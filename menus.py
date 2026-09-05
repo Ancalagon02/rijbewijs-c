@@ -94,74 +94,164 @@ def menu_rijbewijs(data):
 
 # ------------------ Reset functionaliteit ------------------
 
+
 def reset_hoofdstuk(data):
-    """Reset voortgang voor een specifiek hoofdstuk in een module."""
+    """Reset voortgang voor een specifiek hoofdstuk in een module.
+
+    Toon alleen hoofdstukken waarvoor al voortgang aanwezig is.
+    """
     print("\nWelke module wil je resetten?")
     print("1. Gewoon Rijbewijs")
     print("2. Vakbekwaamheid")
     m = input("Keuze (1 of 2, of anders om te annuleren): ").strip()
     if m == "1":
         module = "rijbewijs"
-        hoofdstukken = RIJBEWIJS_HOOFDSTUKKEN
+        hoofdstukken_def = RIJBEWIJS_HOOFDSTUKKEN
     elif m == "2":
         module = "vakbekwaamheid"
-        hoofdstukken = VAK_HOOFDSTUKKEN
+        hoofdstukken_def = VAK_HOOFDSTUKKEN
     else:
         print("Annuleren.")
         return
 
-    print("\nKies hoofdstuk:")
-    for key, info in hoofdstukken.items():
-        print(f"{key}. {info['naam']}")
-    keuze = input("Hoofdstuk (nummer): ").strip()
-    if keuze not in hoofdstukken:
+    mod_data = data.get(module, {}).get("oefenvragen", {})
+    if not mod_data:
+        print("Er is geen voortgang voor deze module — niets om te resetten.")
+        return
+
+    # Toon alleen hoofdstukken met voortgang
+    keys = list(mod_data.keys())
+    print("\nKies hoofdstuk om te resetten:")
+    for i, key in enumerate(keys, start=1):
+        naam = hoofdstukken_def.get(key, {}).get("naam", key)
+        print(f"{i}. {key} - {naam}")
+    print(f"{len(keys)+1}. Annuleren")
+
+    keuze = input("Keuze (nummer): ").strip()
+    try:
+        idx = int(keuze)
+    except ValueError:
+        print("Ongeldige keuze. Annuleren.")
+        return
+    if idx == len(keys) + 1:
+        print("Annuleren.")
+        return
+    if idx < 1 or idx > len(keys):
         print("Ongeldige keuze. Annuleren.")
         return
 
-    mod_data = data.setdefault(module, {}).setdefault("oefenvragen", {})
-    mod_data[keuze] = {"mc": {}, "cases": {}}
+    sel_key = keys[idx - 1]
+    # Reset naar lege hoofdstuk voortgang
+    mod_data[sel_key] = {"mc": {}, "cases": {}}
     sla_voortgang_op(data)
-    print(f"✅ Voortgang hoofdstuk {keuze} ('{hoofdstukken[keuze]['naam']}') is gereset.")
+    naam = hoofdstukken_def.get(sel_key, {}).get("naam", sel_key)
+    print(f"✅ Voortgang hoofdstuk {sel_key} ('{naam}') is gereset.")
 
 
 def reset_examen(data):
-    """Reset voortgang voor een specifiek examen."""
+    """Reset voortgang voor een specifiek examen.
+
+    Toon alleen reeksen/examens die daadwerkelijk in de voortgang aanwezig zijn.
+    """
     print("\nVoor welk examen wil je resetten?")
     print("1. Gewoon Rijbewijs (reeksen A-D)")
     print("2. Vakbekwaamheid (MC of Cases, reeksen A/B)")
     m = input("Keuze (1 of 2, of anders om te annuleren): ").strip()
     if m == "1":
-        # Rijbewijs examens
-        reeks = input("Kies reeks (A, B, C, D): ").strip().upper()
-        if reeks not in ["A", "B", "C", "D"]:
-            print("Ongeldige reeks. Annuleren.")
+        examens = data.get("rijbewijs", {}).get("examens", {})
+        if not examens:
+            print("Er is geen voortgang voor rijbewijs examens — niets om te resetten.")
             return
-        examens = data.setdefault("rijbewijs", {}).setdefault("examens", {})
-        if reeks in examens:
-            del examens[reeks]
-            sla_voortgang_op(data)
-            print(f"✅ Examen {reeks} (rijbewijs) is gereset.")
-        else:
-            print("Er was geen voortgang voor dat examen. Niets te doen.")
-    elif m == "2":
-        t = input("Type examen: MC of Cases? (mc/cases): ").strip().lower()
-        if t not in ["mc", "cases"]:
+        # Toon alleen aanwezige reeksen
+        keys = list(examens.keys())
+        print("\nKies welke rijbewijs-examenreeks je wilt resetten:")
+        for i, key in enumerate(keys, start=1):
+            print(f"{i}. Reeks {key}")
+        print(f"{len(keys)+1}. Annuleren")
+
+        keuze = input("Keuze (nummer): ").strip()
+        try:
+            idx = int(keuze)
+        except ValueError:
             print("Ongeldige keuze. Annuleren.")
             return
-        reeks = input("Kies reeks (A of B): ").strip().upper()
-        if reeks not in ["A", "B"]:
-            print("Ongeldige reeks. Annuleren.")
+        if idx == len(keys) + 1:
+            print("Annuleren.")
             return
-        if t == "mc":
-            examens = data.setdefault("vakbekwaamheid", {}).setdefault("examens_mc", {})
-        else:
-            examens = data.setdefault("vakbekwaamheid", {}).setdefault("examens_cases", {})
-        if reeks in examens:
-            del examens[reeks]
+        if idx < 1 or idx > len(keys):
+            print("Ongeldige keuze. Annuleren.")
+            return
+
+        sel = keys[idx - 1]
+        del examens[sel]
+        sla_voortgang_op(data)
+        print(f"✅ Examen {sel} (rijbewijs) is gereset.")
+
+    elif m == "2":
+        vak = data.get("vakbekwaamheid", {})
+        examens_mc = vak.get("examens_mc", {})
+        examens_cases = vak.get("examens_cases", {})
+
+        print("\nWelke type vakbekwaamheid-examen?")
+        if examens_mc:
+            print("1. MC reeksen")
+        if examens_cases:
+            print("2. Cases reeksen")
+        print("3. Annuleren")
+
+        keuze = input("Keuze (nummer): ").strip()
+        if keuze == "1" and examens_mc:
+            keys = list(examens_mc.keys())
+            print("\nKies MC-reeks om te resetten:")
+            for i, key in enumerate(keys, start=1):
+                print(f"{i}. Reeks {key}")
+            print(f"{len(keys)+1}. Annuleren")
+
+            sel_in = input("Keuze (nummer): ").strip()
+            try:
+                idx = int(sel_in)
+            except ValueError:
+                print("Ongeldige keuze. Annuleren.")
+                return
+            if idx == len(keys) + 1:
+                print("Annuleren.")
+                return
+            if idx < 1 or idx > len(keys):
+                print("Ongeldige keuze. Annuleren.")
+                return
+            sel = keys[idx - 1]
+            del examens_mc[sel]
             sla_voortgang_op(data)
-            print(f"✅ Vakbekwaamheid {t.upper()} examen reeks {reeks} is gereset.")
+            print(f"✅ Vakbekwaamheid MC examen reeks {sel} is gereset.")
+
+        elif keuze == "2" and examens_cases:
+            keys = list(examens_cases.keys())
+            print("\nKies Cases-reeks om te resetten:")
+            for i, key in enumerate(keys, start=1):
+                print(f"{i}. Reeks {key}")
+            print(f"{len(keys)+1}. Annuleren")
+
+            sel_in = input("Keuze (nummer): ").strip()
+            try:
+                idx = int(sel_in)
+            except ValueError:
+                print("Ongeldige keuze. Annuleren.")
+                return
+            if idx == len(keys) + 1:
+                print("Annuleren.")
+                return
+            if idx < 1 or idx > len(keys):
+                print("Ongeldige keuze. Annuleren.")
+                return
+            sel = keys[idx - 1]
+            del examens_cases[sel]
+            sla_voortgang_op(data)
+            print(f"✅ Vakbekwaamheid Cases examen reeks {sel} is gereset.")
+
         else:
-            print("Er was geen voortgang voor dat examen. Niets te doen.")
+            print("Annuleren of geen reeksen aanwezig.")
+            return
+
     else:
         print("Annuleren.")
         return
