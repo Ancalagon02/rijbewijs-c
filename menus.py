@@ -1,15 +1,15 @@
 from config import (
     TIJDLIMIET_GEWOON_EXAMEN_MIN,
-    TIJDLIMIET_VAK_MC_MIN,
     TIJDLIMIET_VAK_CASES_MIN,
+    TIJDLIMIET_VAK_MC_MIN,
 )
 from database import RIJBEWIJS_HOOFDSTUKKEN, VAK_HOOFDSTUKKEN
-from practice import oefen_hoofdstuk
 from exam import (
     start_rijbewijs_examen,
-    start_vakbekwaamheid_mc_examen,
     start_vakbekwaamheid_cases_examen,
+    start_vakbekwaamheid_mc_examen,
 )
+from practice import oefen_hoofdstuk
 
 
 def menu_vakbekwaamheid_oefen(data):

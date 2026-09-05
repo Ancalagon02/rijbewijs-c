@@ -1,9 +1,10 @@
 import time
+
 from config import (
     INVOER_MAP,
     TIJDLIMIET_GEWOON_EXAMEN_MIN,
-    TIJDLIMIET_VAK_MC_MIN,
     TIJDLIMIET_VAK_CASES_MIN,
+    TIJDLIMIET_VAK_MC_MIN,
 )
 from storage import sla_voortgang_op
 from utils import valideer_invoer

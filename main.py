@@ -1,5 +1,5 @@
-from storage import laad_voortgang
 from menus import menu_hoofdscherm
+from storage import laad_voortgang
 
 
 def main():

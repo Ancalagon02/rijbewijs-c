@@ -1,6 +1,5 @@
-from config import INVOER_MAP
 from storage import sla_voortgang_op
-from utils import valideer_invoer, get_voortgang_hoofdstuk, bereken_stats_hoofdstuk
+from utils import bereken_stats_hoofdstuk, get_voortgang_hoofdstuk, valideer_invoer
 
 
 def oefen_hoofdstuk(data, module_sleutel, database, h_sleutel):
