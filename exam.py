@@ -9,7 +9,7 @@ from config import (
     SLAGINGSCRITERIUM_VAK_MC,
     SLAGINGSCRITERIUM_VAK_CASES,
 )
-from storage import sla_voortgang_op
+from storage import sla_voortgang_op, markeer_examen_geslaagd
 from utils import valideer_invoer
 
 
@@ -119,6 +119,8 @@ def start_rijbewijs_examen(data, reeks):
     if geslaagd:
         print(f"\n🎉 EXAMEN VOLTOOID! Score: {juist} / 50")
         print("✅ JE BENT GESLAAGD!")
+        # Mark exam as passed
+        markeer_examen_geslaagd(data, "rijbewijs", reeks)
     else:
         print(f"\n🎉 EXAMEN VOLTOOID! Score: {juist} / 50")
         print(f"❌ JE BENT NIET GESLAAGD. Je had minstens {minimaal} punten nodig.")
@@ -165,6 +167,8 @@ def start_vakbekwaamheid_mc_examen(data, reeks):
     if geslaagd:
         print(f"\n🎉 MC EXAMEN VOLTOOID! Score: {juist} / 50")
         print("✅ JE BENT GESLAAGD!")
+        # Mark exam as passed
+        markeer_examen_geslaagd(data, "vakbekwaamheid", reeks, "mc")
     else:
         print(f"\n🎉 MC EXAMEN VOLTOOID! Score: {juist} / 50")
         print(f"❌ JE BENT NIET GESLAAGD. Je had minstens {minimaal} punten nodig.")
@@ -224,6 +228,8 @@ def start_vakbekwaamheid_cases_examen(data, reeks):
     if geslaagd:
         print(f"\n🎉 CASES EXAMEN VOLTOOID! Score: {juist} / {totaal_vragen}")
         print("✅ JE BENT GESLAAGD!")
+        # Mark exam as passed
+        markeer_examen_geslaagd(data, "vakbekwaamheid", reeks, "cases")
     else:
         print(f"\n🎉 CASES EXAMEN VOLTOOID! Score: {juist} / {totaal_vragen}")
         print(f"❌ JE BENT NIET GESLAAGD. Je had minstens {minimaal} punten nodig.")
