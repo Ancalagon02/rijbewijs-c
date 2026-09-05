@@ -10,6 +10,8 @@ from exam import (
     start_vakbekwaamheid_mc_examen,
 )
 from practice import oefen_hoofdstuk
+from storage import sla_voortgang_op, laad_voortgang
+import time
 
 
 def menu_vakbekwaamheid_oefen(data):
@@ -88,6 +90,119 @@ def menu_rijbewijs(data):
             break
 
 
+# ------------------ Reset functionaliteit ------------------
+
+def reset_hoofdstuk(data):
+    """Reset voortgang voor een specifiek hoofdstuk in een module."""
+    print("\nWelke module wil je resetten?")
+    print("1. Gewoon Rijbewijs")
+    print("2. Vakbekwaamheid")
+    m = input("Keuze (1 of 2, of anders om te annuleren): ").strip()
+    if m == "1":
+        module = "rijbewijs"
+        hoofdstukken = RIJBEWIJS_HOOFDSTUKKEN
+    elif m == "2":
+        module = "vakbekwaamheid"
+        hoofdstukken = VAK_HOOFDSTUKKEN
+    else:
+        print("Annuleren.")
+        return
+
+    print("\nKies hoofdstuk:")
+    for key, info in hoofdstukken.items():
+        print(f"{key}. {info['naam']}")
+    keuze = input("Hoofdstuk (nummer): ").strip()
+    if keuze not in hoofdstukken:
+        print("Ongeldige keuze. Annuleren.")
+        return
+
+    mod_data = data.setdefault(module, {}).setdefault("oefenvragen", {})
+    mod_data[keuze] = {"mc": {}, "cases": {}}
+    sla_voortgang_op(data)
+    print(f"✅ Voortgang hoofdstuk {keuze} ('{hoofdstukken[keuze]['naam']}') is gereset.")
+
+
+def reset_examen(data):
+    """Reset voortgang voor een specifiek examen."""
+    print("\nVoor welk examen wil je resetten?")
+    print("1. Gewoon Rijbewijs (reeksen A-D)")
+    print("2. Vakbekwaamheid (MC of Cases, reeksen A/B)")
+    m = input("Keuze (1 of 2, of anders om te annuleren): ").strip()
+    if m == "1":
+        # Rijbewijs examens
+        reeks = input("Kies reeks (A, B, C, D): ").strip().upper()
+        if reeks not in ["A", "B", "C", "D"]:
+            print("Ongeldige reeks. Annuleren.")
+            return
+        examens = data.setdefault("rijbewijs", {}).setdefault("examens", {})
+        if reeks in examens:
+            del examens[reeks]
+            sla_voortgang_op(data)
+            print(f"✅ Examen {reeks} (rijbewijs) is gereset.")
+        else:
+            print("Er was geen voortgang voor dat examen. Niets te doen.")
+    elif m == "2":
+        t = input("Type examen: MC of Cases? (mc/cases): ").strip().lower()
+        if t not in ["mc", "cases"]:
+            print("Ongeldige keuze. Annuleren.")
+            return
+        reeks = input("Kies reeks (A of B): ").strip().upper()
+        if reeks not in ["A", "B"]:
+            print("Ongeldige reeks. Annuleren.")
+            return
+        if t == "mc":
+            examens = data.setdefault("vakbekwaamheid", {}).setdefault("examens_mc", {})
+        else:
+            examens = data.setdefault("vakbekwaamheid", {}).setdefault("examens_cases", {})
+        if reeks in examens:
+            del examens[reeks]
+            sla_voortgang_op(data)
+            print(f"✅ Vakbekwaamheid {t.upper()} examen reeks {reeks} is gereset.")
+        else:
+            print("Er was geen voortgang voor dat examen. Niets te doen.")
+    else:
+        print("Annuleren.")
+        return
+
+
+def reset_volledig(data):
+    """Reset alle voortgang — volledige reset van de applicatie."""
+    confirm = input("\nWeet je zeker dat je ALLES wilt resetten? Dit kan niet ongedaan gemaakt worden. (ja/nee): ").strip().lower()
+    if confirm not in ["ja", "j", "yes", "y"]:
+        print("Annuleren.")
+        return
+
+    # Herstel naar lege structuur zoals laad_voortgang() zou retourneren
+    default = laad_voortgang()
+    data.clear()
+    data.update(default)
+    sla_voortgang_op(data)
+    print("✅ Alle voortgang is verwijderd."
+          " Je kunt nu opnieuw beginnen.")
+
+
+def menu_reset_options(data):
+    """Hoofdmenu voor reset opties (toegankelijk vanuit hoofdmenu)."""
+    while True:
+        print("\n==================================")
+        print("      RESET OPTIES                ")
+        print("==================================")
+        print("1. Reset oefeningen per Hoofdstuk")
+        print("2. Reset per Examen")
+        print("3. Volledige reset (alles)")
+        print("4. Terug naar Hoofdmenu")
+
+        k = input("\nMaak een keuze (1-4): ").strip()
+        if k == "1":
+            reset_hoofdstuk(data)
+        elif k == "2":
+            reset_examen(data)
+        elif k == "3":
+            reset_volledig(data)
+        elif k == "4":
+            break
+
+
 def menu_hoofdscherm(data):
     """Hoofdmenu van de applicatie."""
     while True:
@@ -96,13 +211,16 @@ def menu_hoofdscherm(data):
         print("==================================")
         print("1. Gewoon Rijbewijs")
         print("2. Vakbekwaamheid")
-        print("3. Afsluiten")
+        print("3. Reset opties")
+        print("4. Afsluiten")
 
-        keuze = input("\nWaarvoor wil je oefenen? (1-3): ").strip()
+        keuze = input("\nWaarvoor wil je oefenen? (1-4): ").strip()
         if keuze == "1":
             menu_rijbewijs(data)
         elif keuze == "2":
             menu_vakbekwaamheid(data)
         elif keuze == "3":
+            menu_reset_options(data)
+        elif keuze == "4":
             print("Tot ziens!")
             break
