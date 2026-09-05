@@ -19,9 +19,9 @@ import os
 def menu_vakbekwaamheid_oefen(data):
     """Menu voor oefenen per Vakbekwaamheid hoofdstuk."""
     while True:
-        print("\n==================================")
+        print("\n===================================")
         print("  VAKBEKWAAMHEID: HOOFDSTUKKEN    ")
-        print("==================================")
+        print("===================================")
         for key, info in VAK_HOOFDSTUKKEN.items():
             print(f"{key}. {info['naam']}")
         print("8. Terug")
@@ -36,14 +36,14 @@ def menu_vakbekwaamheid_oefen(data):
 def menu_vakbekwaamheid(data):
     """Hoofdmenu Vakbekwaamheid module."""
     while True:
-        print("\n==================================")
+        print("\n===================================")
         print("  MODULE: VAKBEKWAAMHEID C/D     ")
-        print("==================================")
+        print("===================================")
         print("1. Oefenvragen per Hoofdstuk")
         print(f"2. MC Examen Reeks A ({TIJDLIMIET_VAK_MC_MIN} min)")
         print(f"3. MC Examen Reeks B ({TIJDLIMIET_VAK_MC_MIN} min)")
-        print(f"4. Casus Examen Reeks A ({TIJDLIMIET_VAK_CASES_MIN} min)")
-        print(f"5. Casus Examen Reeks B ({TIJDLIMIET_VAK_CASES_MIN} min)")
+        print(f"4. Cases Examen Reeks A ({TIJDLIMIET_VAK_CASES_MIN} min)")
+        print(f"5. Cases Examen Reeks B ({TIJDLIMIET_VAK_CASES_MIN} min)")
         print("6. Terug naar Hoofdmenu")
 
         k = input("\nMaak een keuze (1-6): ").strip()
@@ -64,9 +64,9 @@ def menu_vakbekwaamheid(data):
 def menu_rijbewijs(data):
     """Hoofdmenu Rijbewijs module."""
     while True:
-        print("\n==================================")
+        print("\n===================================")
         print("  MODULE: GEWOON RIJBEWIJS        ")
-        print("==================================")
+        print("===================================")
         print("1. Oefenvragen per Hoofdstuk")
         print(f"2. Examenreeksen ({TIJDLIMIET_GEWOON_EXAMEN_MIN} min per reeks)")
         print("3. Terug naar Hoofdmenu")
@@ -286,9 +286,9 @@ def reset_volledig(data):
 def menu_reset_options(data):
     """Hoofdmenu voor reset opties (toegankelijk vanuit hoofdmenu)."""
     while True:
-        print("\n==================================")
+        print("\n===================================")
         print("      RESET OPTIES                ")
-        print("==================================")
+        print("===================================")
         print("1. Reset oefeningen per Hoofdstuk")
         print("2. Reset per Examen")
         print("3. Volledige reset (alles)")
@@ -308,9 +308,9 @@ def menu_reset_options(data):
 def menu_hoofdscherm(data):
     """Hoofdmenu van de applicatie."""
     while True:
-        print("\n==================================")
+        print("\n===================================")
         print("      HOOFDMENU SELECTIE          ")
-        print("==================================")
+        print("===================================")
         print("1. Gewoon Rijbewijs")
         print("2. Vakbekwaamheid")
         print("3. Reset opties")

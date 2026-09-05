@@ -121,7 +121,7 @@ def start_rijbewijs_examen(data, reeks):
         print("✅ JE BENT GESLAAGD!")
     else:
         print(f"\n🎉 EXAMEN VOLTOOID! Score: {juist} / 50")
-        print(f"❌ JE BENT NIET GESLAAGD. Je nodig minstens {minimaal} punten.")
+        print(f"❌ JE BENT NIET GESLAAGD. Je had minstens {minimaal} punten nodig.")
 
 
 def start_vakbekwaamheid_mc_examen(data, reeks):
@@ -167,7 +167,7 @@ def start_vakbekwaamheid_mc_examen(data, reeks):
         print("✅ JE BENT GESLAAGD!")
     else:
         print(f"\n🎉 MC EXAMEN VOLTOOID! Score: {juist} / 50")
-        print(f"❌ JE BENT NIET GESLAAGD. Je nodig minstens {minimaal} punten.")
+        print(f"❌ JE BENT NIET GESLAAGD. Je had minstens {minimaal} punten nodig.")
 
 
 def start_vakbekwaamheid_cases_examen(data, reeks):
@@ -189,7 +189,7 @@ def start_vakbekwaamheid_cases_examen(data, reeks):
 
     ex_def = VAK_EXAMEN_REEKSEN[reeks]["cases"]
     print("\n==========================================")
-    print(f"  VAKBEKWAAMHEID CASUS EXAMEN REEKS {reeks}")
+    print(f"  VAKBEKWAAMHEID CASES EXAMEN REEKS {reeks}")
     print(f"  Tijdslimiet: {TIJDLIMIET_VAK_CASES_MIN} minuten (8 Cases / 40 vragen)")
     print(f"  Slagingscriterium: minstens {SLAGINGSCRITERIUM_VAK_CASES}/40")
     print("==========================================")
@@ -222,8 +222,8 @@ def start_vakbekwaamheid_cases_examen(data, reeks):
     
     geslaagd, minimaal = check_slagingsstatus(juist, totaal_vragen, "vak_cases")
     if geslaagd:
-        print(f"\n🎉 CASUS EXAMEN VOLTOOID! Score: {juist} / {totaal_vragen}")
+        print(f"\n🎉 CASES EXAMEN VOLTOOID! Score: {juist} / {totaal_vragen}")
         print("✅ JE BENT GESLAAGD!")
     else:
-        print(f"\n🎉 CASUS EXAMEN VOLTOOID! Score: {juist} / {totaal_vragen}")
-        print(f"❌ JE BENT NIET GESLAAGD. Je nodig minstens {minimaal} punten.")
+        print(f"\n🎉 CASES EXAMEN VOLTOOID! Score: {juist} / {totaal_vragen}")
+        print(f"❌ JE BENT NIET GESLAAGD. Je had minstens {minimaal} punten nodig.")
