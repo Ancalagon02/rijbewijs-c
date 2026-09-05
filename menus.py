@@ -1,8 +1,10 @@
+import os
+
 from config import (
+    BESTANDSNAAM,
     TIJDLIMIET_GEWOON_EXAMEN_MIN,
     TIJDLIMIET_VAK_CASES_MIN,
     TIJDLIMIET_VAK_MC_MIN,
-    BESTANDSNAAM,
 )
 from database import RIJBEWIJS_HOOFDSTUKKEN, VAK_HOOFDSTUKKEN
 from exam import (
@@ -11,9 +13,12 @@ from exam import (
     start_vakbekwaamheid_mc_examen,
 )
 from practice import oefen_hoofdstuk
-from storage import sla_voortgang_op, laad_voortgang, is_hoofdstuk_voltooid, is_examen_geslaagd
-import time
-import os
+from storage import (
+    is_examen_geslaagd,
+    is_hoofdstuk_voltooid,
+    laad_voortgang,
+    sla_voortgang_op,
+)
 
 
 def menu_vakbekwaamheid_oefen(data):
@@ -33,7 +38,7 @@ def menu_vakbekwaamheid_oefen(data):
         k = input("\nKies een hoofdstuk (1-8): ").strip()
         if k in VAK_HOOFDSTUKKEN:
             if is_hoofdstuk_voltooid(data, "vakbekwaamheid", k):
-                print(f"✅ Dit hoofdstuk is al volledig afgerond!")
+                print("✅ Dit hoofdstuk is al volledig afgerond!")
             else:
                 oefen_hoofdstuk(data, "vakbekwaamheid", VAK_HOOFDSTUKKEN, k)
         elif k == "8":
@@ -52,22 +57,22 @@ def menu_vakbekwaamheid(data):
         if not is_examen_geslaagd(data, "vakbekwaamheid", "A", "mc"):
             print(f"2. MC Examen Reeks A ({TIJDLIMIET_VAK_MC_MIN} min)")
         else:
-            print(f"2. MC Examen Reeks A ✅ (geslaagd)")
+            print("2. MC Examen Reeks A ✅ (geslaagd)")
         
         if not is_examen_geslaagd(data, "vakbekwaamheid", "B", "mc"):
             print(f"3. MC Examen Reeks B ({TIJDLIMIET_VAK_MC_MIN} min)")
         else:
-            print(f"3. MC Examen Reeks B ✅ (geslaagd)")
+            print("3. MC Examen Reeks B ✅ (geslaagd)")
         
         if not is_examen_geslaagd(data, "vakbekwaamheid", "A", "cases"):
             print(f"4. Cases Examen Reeks A ({TIJDLIMIET_VAK_CASES_MIN} min)")
         else:
-            print(f"4. Cases Examen Reeks A ✅ (geslaagd)")
+            print("4. Cases Examen Reeks A ✅ (geslaagd)")
         
         if not is_examen_geslaagd(data, "vakbekwaamheid", "B", "cases"):
             print(f"5. Cases Examen Reeks B ({TIJDLIMIET_VAK_CASES_MIN} min)")
         else:
-            print(f"5. Cases Examen Reeks B ✅ (geslaagd)")
+            print("5. Cases Examen Reeks B ✅ (geslaagd)")
         
         print("6. Terug naar Hoofdmenu")
 
@@ -123,7 +128,7 @@ def menu_rijbewijs(data):
                 h_k = input("Keuze: ").strip()
                 if h_k in RIJBEWIJS_HOOFDSTUKKEN:
                     if is_hoofdstuk_voltooid(data, "rijbewijs", h_k):
-                        print(f"✅ Dit hoofdstuk is al volledig afgerond!")
+                        print("✅ Dit hoofdstuk is al volledig afgerond!")
                     else:
                         oefen_hoofdstuk(data, "rijbewijs", RIJBEWIJS_HOOFDSTUKKEN, h_k)
                 elif h_k == "17":

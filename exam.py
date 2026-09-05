@@ -1,15 +1,14 @@
 import time
 
 from config import (
-    INVOER_MAP,
+    SLAGINGSCRITERIUM_RIJBEWIJS,
+    SLAGINGSCRITERIUM_VAK_CASES,
+    SLAGINGSCRITERIUM_VAK_MC,
     TIJDLIMIET_GEWOON_EXAMEN_MIN,
     TIJDLIMIET_VAK_CASES_MIN,
     TIJDLIMIET_VAK_MC_MIN,
-    SLAGINGSCRITERIUM_RIJBEWIJS,
-    SLAGINGSCRITERIUM_VAK_MC,
-    SLAGINGSCRITERIUM_VAK_CASES,
 )
-from storage import sla_voortgang_op, markeer_examen_geslaagd
+from storage import markeer_examen_geslaagd, sla_voortgang_op
 from utils import valideer_invoer
 
 
@@ -114,7 +113,7 @@ def start_rijbewijs_examen(data, reeks):
     juist = sum(1 for q, a in ex_data["antwoorden"].items() if sleutel[int(q)] == a)
     ex_data["score"] = juist
     sla_voortgang_op(data)
-    
+
     geslaagd, minimaal = check_slagingsstatus(juist, 50, "rijbewijs")
     if geslaagd:
         print(f"\n🎉 EXAMEN VOLTOOID! Score: {juist} / 50")
@@ -162,7 +161,7 @@ def start_vakbekwaamheid_mc_examen(data, reeks):
     juist = sum(1 for q, a in r_data["antwoorden"].items() if ex_def[int(q)] == a)
     r_data["score"] = juist
     sla_voortgang_op(data)
-    
+
     geslaagd, minimaal = check_slagingsstatus(juist, 50, "vak_mc")
     if geslaagd:
         print(f"\n🎉 MC EXAMEN VOLTOOID! Score: {juist} / 50")
@@ -223,7 +222,7 @@ def start_vakbekwaamheid_cases_examen(data, reeks):
 
     r_data["score"] = juist
     sla_voortgang_op(data)
-    
+
     geslaagd, minimaal = check_slagingsstatus(juist, totaal_vragen, "vak_cases")
     if geslaagd:
         print(f"\n🎉 CASES EXAMEN VOLTOOID! Score: {juist} / {totaal_vragen}")

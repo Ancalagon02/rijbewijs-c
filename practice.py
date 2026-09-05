@@ -1,4 +1,4 @@
-from storage import sla_voortgang_op, markeer_hoofdstuk_klaar
+from storage import markeer_hoofdstuk_klaar, sla_voortgang_op
 from utils import bereken_stats_hoofdstuk, get_voortgang_hoofdstuk, valideer_invoer
 
 
@@ -96,19 +96,19 @@ def oefen_hoofdstuk(data, module_sleutel, database, h_sleutel):
                     break
                 else:
                     print("Ongeldige invoer. Voer A, B, C, D in (of 1, 2, 3, 4).")
-    
+
     # Check if chapter is completed with no errors
     gemaakt_mc_new, gemaakt_cases_new, _ = bereken_stats_hoofdstuk(
         voortgang_h, mc_vragen, cases
     )
-    
+
     # Verify all answers are correct
     all_correct = True
     for q_nr, q_data in voortgang_h["mc"].items():
         if not q_data.get("correct", False):
             all_correct = False
             break
-    
+
     if all_correct:
         for c_vragen_dict in voortgang_h["cases"].values():
             for q_nr, q_data in c_vragen_dict.items():
@@ -117,9 +117,13 @@ def oefen_hoofdstuk(data, module_sleutel, database, h_sleutel):
                     break
             if not all_correct:
                 break
-    
+
     # If all questions are answered and all are correct, mark chapter as complete
-    if all_correct and gemaakt_mc_new == len(mc_vragen) and gemaakt_cases_new == sum(len(c) for c in cases.values()):
+    if (
+        all_correct
+        and gemaakt_mc_new == len(mc_vragen)
+        and gemaakt_cases_new == sum(len(c) for c in cases.values())
+    ):
         markeer_hoofdstuk_klaar(data, module_sleutel, h_sleutel)
         print(f"\n🎉 HOOFDSTUK {h_sleutel} VOLTOOID! Geen fouten gemaakt!")
         print("✅ Dit hoofdstuk wordt niet meer in de lijst weergegeven.")
