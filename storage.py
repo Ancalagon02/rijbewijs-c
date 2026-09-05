@@ -13,8 +13,8 @@ def laad_voortgang():
         except (json.JSONDecodeError, OSError):
             pass
     return {
-        "rijbewijs": {"oefenvragen": {}, "examens": {}, "completed_hoofdstukken": set()},
-        "vakbekwaamheid": {"oefenvragen": {}, "examens_mc": {}, "examens_cases": {}, "completed_hoofdstukken": set()},
+        "rijbewijs": {"oefenvragen": {}, "examens": {}, "completed_hoofdstukken": []},
+        "vakbekwaamheid": {"oefenvragen": {}, "examens_mc": {}, "examens_cases": {}, "completed_hoofdstukken": []},
     }
 
 
