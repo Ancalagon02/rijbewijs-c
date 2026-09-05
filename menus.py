@@ -11,7 +11,7 @@ from exam import (
     start_vakbekwaamheid_mc_examen,
 )
 from practice import oefen_hoofdstuk
-from storage import sla_voortgang_op, laad_voortgang
+from storage import sla_voortgang_op, laad_voortgang, is_hoofdstuk_voltooid, is_examen_geslaagd
 import time
 import os
 
@@ -23,12 +23,19 @@ def menu_vakbekwaamheid_oefen(data):
         print("  VAKBEKWAAMHEID: HOOFDSTUKKEN    ")
         print("===================================")
         for key, info in VAK_HOOFDSTUKKEN.items():
-            print(f"{key}. {info['naam']}")
+            # Skip completed chapters
+            if is_hoofdstuk_voltooid(data, "vakbekwaamheid", key):
+                print(f"{key}. {info['naam']} ✅ (voltooid)")
+            else:
+                print(f"{key}. {info['naam']}")
         print("8. Terug")
 
         k = input("\nKies een hoofdstuk (1-8): ").strip()
         if k in VAK_HOOFDSTUKKEN:
-            oefen_hoofdstuk(data, "vakbekwaamheid", VAK_HOOFDSTUKKEN, k)
+            if is_hoofdstuk_voltooid(data, "vakbekwaamheid", k):
+                print(f"✅ Dit hoofdstuk is al volledig afgerond!")
+            else:
+                oefen_hoofdstuk(data, "vakbekwaamheid", VAK_HOOFDSTUKKEN, k)
         elif k == "8":
             break
 
@@ -40,23 +47,53 @@ def menu_vakbekwaamheid(data):
         print("  MODULE: VAKBEKWAAMHEID C/D     ")
         print("===================================")
         print("1. Oefenvragen per Hoofdstuk")
-        print(f"2. MC Examen Reeks A ({TIJDLIMIET_VAK_MC_MIN} min)")
-        print(f"3. MC Examen Reeks B ({TIJDLIMIET_VAK_MC_MIN} min)")
-        print(f"4. Cases Examen Reeks A ({TIJDLIMIET_VAK_CASES_MIN} min)")
-        print(f"5. Cases Examen Reeks B ({TIJDLIMIET_VAK_CASES_MIN} min)")
+        
+        # Only show exams that are not yet passed
+        if not is_examen_geslaagd(data, "vakbekwaamheid", "A", "mc"):
+            print(f"2. MC Examen Reeks A ({TIJDLIMIET_VAK_MC_MIN} min)")
+        else:
+            print(f"2. MC Examen Reeks A ✅ (geslaagd)")
+        
+        if not is_examen_geslaagd(data, "vakbekwaamheid", "B", "mc"):
+            print(f"3. MC Examen Reeks B ({TIJDLIMIET_VAK_MC_MIN} min)")
+        else:
+            print(f"3. MC Examen Reeks B ✅ (geslaagd)")
+        
+        if not is_examen_geslaagd(data, "vakbekwaamheid", "A", "cases"):
+            print(f"4. Cases Examen Reeks A ({TIJDLIMIET_VAK_CASES_MIN} min)")
+        else:
+            print(f"4. Cases Examen Reeks A ✅ (geslaagd)")
+        
+        if not is_examen_geslaagd(data, "vakbekwaamheid", "B", "cases"):
+            print(f"5. Cases Examen Reeks B ({TIJDLIMIET_VAK_CASES_MIN} min)")
+        else:
+            print(f"5. Cases Examen Reeks B ✅ (geslaagd)")
+        
         print("6. Terug naar Hoofdmenu")
 
         k = input("\nMaak een keuze (1-6): ").strip()
         if k == "1":
             menu_vakbekwaamheid_oefen(data)
         elif k == "2":
-            start_vakbekwaamheid_mc_examen(data, "A")
+            if not is_examen_geslaagd(data, "vakbekwaamheid", "A", "mc"):
+                start_vakbekwaamheid_mc_examen(data, "A")
+            else:
+                print("✅ Je bent al geslaagd voor MC Examen Reeks A!")
         elif k == "3":
-            start_vakbekwaamheid_mc_examen(data, "B")
+            if not is_examen_geslaagd(data, "vakbekwaamheid", "B", "mc"):
+                start_vakbekwaamheid_mc_examen(data, "B")
+            else:
+                print("✅ Je bent al geslaagd voor MC Examen Reeks B!")
         elif k == "4":
-            start_vakbekwaamheid_cases_examen(data, "A")
+            if not is_examen_geslaagd(data, "vakbekwaamheid", "A", "cases"):
+                start_vakbekwaamheid_cases_examen(data, "A")
+            else:
+                print("✅ Je bent al geslaagd voor Cases Examen Reeks A!")
         elif k == "5":
-            start_vakbekwaamheid_cases_examen(data, "B")
+            if not is_examen_geslaagd(data, "vakbekwaamheid", "B", "cases"):
+                start_vakbekwaamheid_cases_examen(data, "B")
+            else:
+                print("✅ Je bent al geslaagd voor Cases Examen Reeks B!")
         elif k == "6":
             break
 
@@ -76,18 +113,28 @@ def menu_rijbewijs(data):
             while True:
                 print("\nKies Hoofdstuk (1-16) of 17 om terug te gaan:")
                 for key, info in RIJBEWIJS_HOOFDSTUKKEN.items():
-                    print(f"{key}. {info['naam']}")
+                    # Show if chapter is completed
+                    if is_hoofdstuk_voltooid(data, "rijbewijs", key):
+                        print(f"{key}. {info['naam']} ✅ (voltooid)")
+                    else:
+                        print(f"{key}. {info['naam']}")
                 print("17. Terug")
 
                 h_k = input("Keuze: ").strip()
                 if h_k in RIJBEWIJS_HOOFDSTUKKEN:
-                    oefen_hoofdstuk(data, "rijbewijs", RIJBEWIJS_HOOFDSTUKKEN, h_k)
+                    if is_hoofdstuk_voltooid(data, "rijbewijs", h_k):
+                        print(f"✅ Dit hoofdstuk is al volledig afgerond!")
+                    else:
+                        oefen_hoofdstuk(data, "rijbewijs", RIJBEWIJS_HOOFDSTUKKEN, h_k)
                 elif h_k == "17":
                     break
         elif k == "2":
             r_k = input("Kies reeks (A, B, C, D): ").strip().upper()
             if r_k in ["A", "B", "C", "D"]:
-                start_rijbewijs_examen(data, r_k)
+                if is_examen_geslaagd(data, "rijbewijs", r_k):
+                    print(f"✅ Je bent al geslaagd voor examen reeks {r_k}!")
+                else:
+                    start_rijbewijs_examen(data, r_k)
         elif k == "3":
             break
 
